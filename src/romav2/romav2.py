@@ -79,6 +79,7 @@ class RoMaV2(nn.Module):
         setting: Setting = "precise"
         compile: bool = False
         name: str = "RoMa v2"
+        weights: dict = None
 
     # settings
     H_lr: int
@@ -94,11 +95,14 @@ class RoMaV2(nn.Module):
         if cfg is None:
             # default
             cfg = RoMaV2.Cfg()
+
+        if cfg.weights is None:   
+            weights = torch.hub.load_state_dict_from_url(
+                "https://github.com/Parskatt/RoMaV2/releases/download/weights/romav2.pt"
+            )
+        else:
+            weights = cfg.weights
             
-        weights = torch.hub.load_state_dict_from_url(
-            "https://github.com/Parskatt/RoMaV2/releases/download/v2.0.1/romav2.0.1.pt",
-            map_location=device
-        )
         self.f = Descriptor(cfg.descriptor)
         self.matcher = Matcher(cfg.matcher)
         self.cfg = cfg
